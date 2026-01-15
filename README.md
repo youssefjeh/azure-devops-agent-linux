@@ -114,7 +114,7 @@ Ajoute l’utilisateur `azureagent` au groupe `sudo`, ce qui lui donne les permi
 
 ---
 
-## ✅ **Résumé global de ton objectif :**
+## ✅ **Résumé global :**
 
 Tu es en train d’**installer et configurer un agent Azure DevOps auto-hébergé** sur une machine Linux. Voici les grandes étapes :
 
@@ -197,6 +197,35 @@ cd $AGENT_DIR && \
 ./svc.sh start
 "
 
-echo "🎉 Agent Azure DevOps installé et lancé avec succès."
 
+echo "🎉 Agent Azure DevOps installé et lancé avec succès."
 ```
+
+## 🔐 **5. Missing execute permissions on Node binaries**
+When starting the Azure DevOps agent service, the service fails with:
+``` bash
+Permission denied
+status=126
+./externals/node20_1/bin/node: Permission denied
+./externals/node16/bin/node: Permission denied
+```
+This means the Node.js binaries bundled with the agent are not executable.
+
+### Cause
+The "externals" directory lost execute permissions (common after unzip/copy).
+
+### Solution
+
+Run the following commands as root:
+``` bash
+cd /home/azureagent/AgentDir
+chmod -R +x externals
+```
+
+Then restart the agent service:
+``` bash
+./svc.sh start
+```
+
+
+
